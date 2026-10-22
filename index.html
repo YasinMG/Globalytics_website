@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Globalytics – Daten &amp; KI-Agenten als Wachstumsmotor | Data Analytics, BI &amp; KI aus Frankfurt</title>
+<title>Globalytics – Daten &amp; KI als Wachstumsmotor | Data Analytics, BI &amp; KI aus Frankfurt</title>
 <meta name="description" content="Globalytics verwandelt Unternehmensdaten in klare Entscheidungen, automatisierte Prozesse und messbares Wachstum – mit Business Intelligence, Data Engineering, KI und Prozessautomatisierung aus Frankfurt am Main.">
 <link rel="canonical" href="https://www.globalytics.org/">
 <meta name="robots" content="index, follow">
@@ -82,6 +82,15 @@ input:invalid:focus{border-color:#111111}
 .site-header.nav-open .nav-links{display:flex !important;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:flex-start !important;gap:0 !important;background:#FFFFFF;padding:8px clamp(16px,4vw,40px) 20px;border-bottom:1px solid #ECECEC;box-shadow:0 24px 40px -32px rgba(17,17,17,.4)}
 .site-header.nav-open .nav-links a{display:block;width:100%;padding:12px 0;font-size:17px}
 }
+
+.gl-tech{display:flex;align-items:center;gap:9px;padding:7px 14px 7px 7px;background:#FFFFFF;color:#111111;border:1px solid #E4E4E4;border-radius:14px;box-shadow:0 12px 30px -18px rgba(17,17,17,.3);font-size:14px;font-weight:600;white-space:nowrap;z-index:1}
+.gl-tech-icon{width:30px;height:30px;border-radius:9px;background:#F4F4F2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gl-tech-icon img{width:22px;height:22px;display:block;object-fit:contain}
+.gl-tech-icon.is-missing img{display:none}
+.gl-tech-icon.is-missing::after{content:"";width:8px;height:8px;border-radius:2px;background:#C8F135;box-shadow:0 0 0 1px #111111}
+.gl-tech--dark{background:#111111;color:#FFFFFF;border-color:#111111}
+.gl-tech--dark .gl-tech-icon{background:#2A2A2A}
+@media (max-width: 560px){.gl-tech{font-size:12px;gap:7px;padding:5px 10px 5px 5px;border-radius:12px}.gl-tech-icon{width:24px;height:24px;border-radius:7px}.gl-tech-icon img{width:18px;height:18px}}
 </style>
 </head>
 <body>
@@ -215,17 +224,23 @@ input:invalid:focus{border-color:#111111}
         <circle class="gl-pulse" cx="236" cy="302" r="15" fill="none" stroke="#9BC21A" stroke-width="1.4"></circle>
         <circle class="gl-pulse" cx="200" cy="190" r="15" fill="none" stroke="#9BC21A" stroke-width="1.4"></circle>
       </svg>
-      <div class="gl-float" style="position: absolute; left: 0; top: 16%; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E4; border-radius: 14px; box-shadow: 0 12px 30px -18px rgba(17,17,17,.3); font-size: 14px; font-weight: 600">
-        <span style="width: 8px; height: 8px; border-radius: 2px; background: #111111"></span>Power BI
+      <div class="gl-float gl-tech" style="position: absolute; left: 0; top: 12%; animation-delay: 0s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/power-bi.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>Power BI
       </div>
-      <div class="gl-float" style="position: absolute; right: 0; top: 30%; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #111111; color: #FFFFFF; border-radius: 14px; font-size: 14px; font-weight: 600; animation-delay: -2s">
-        <span style="width: 8px; height: 8px; border-radius: 50%; background: #C8F135"></span>KI-Agenten
+      <div class="gl-float gl-tech" style="position: absolute; right: 2%; top: 5%; animation-delay: -1.5s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/fabric.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>Microsoft Fabric
       </div>
-      <div class="gl-float" style="position: absolute; left: 6%; bottom: 14%; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E4; border-radius: 14px; box-shadow: 0 12px 30px -18px rgba(17,17,17,.3); font-size: 14px; font-weight: 600; animation-delay: -4s">
-        <span style="width: 8px; height: 8px; border-radius: 2px; background: #C8F135; box-shadow: 0 0 0 1px #111111"></span>Microsoft Fabric
+      <div class="gl-float gl-tech" style="position: absolute; right: 0; top: 40%; animation-delay: -3s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/azure.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>Azure
       </div>
-      <div class="gl-float" style="position: absolute; right: 4%; bottom: 8%; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E4; border-radius: 14px; box-shadow: 0 12px 30px -18px rgba(17,17,17,.3); font-size: 14px; font-weight: 600; animation-delay: -1s">
-        <span style="width: 8px; height: 8px; border-radius: 2px; background: #111111"></span>Automatisierung
+      <div class="gl-float gl-tech" style="position: absolute; left: 0; top: 47%; animation-delay: -4.5s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/power-automate.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>Power Automate
+      </div>
+      <div class="gl-float gl-tech gl-tech--dark" style="position: absolute; left: 3%; bottom: 9%; animation-delay: -2s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/ai-agents.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>KI-Agenten · Open Source
+      </div>
+      <div class="gl-float gl-tech" style="position: absolute; right: 5%; bottom: 5%; animation-delay: -5s">
+        <span class="gl-tech-icon"><img src="assets/img/tech/n8n.svg" alt="" width="22" height="22" loading="lazy" onerror="this.parentNode.classList.add('is-missing')"></span>n8n
       </div>
     </div>
   </div>
