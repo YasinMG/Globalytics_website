@@ -45,7 +45,8 @@ module.exports = async (req, res) => {
 
   const lang = b.lang === 'en' ? 'en' : session.lang;
   const firstName = session.name.split(/\s+/)[0];
-  const ctx = `SEITENKONTEXT (automatisch, nicht vom Besucher geschrieben)\n${contextBlock(b.context)}\nBesucher: ${firstName} (Kontaktdaten liegen vor).`;
+  const ctx = `SEITENKONTEXT (automatisch, nicht vom Besucher geschrieben)\n${contextBlock(b.context)}\nBesucher: ${firstName} (Kontaktdaten liegen vor).` +
+    (b.voice ? '\n\nSPRACHMODUS: Der Besucher spricht mit dir, deine Antwort wird vorgelesen. Antworte wie im Telefongespräch: 1–3 kurze, natürliche Sätze, keine Listen, keine Klammern, keine Sonderzeichen, keine URLs ausschreiben (sag z. B. „über den Button unten“). Zahlen gut sprechbar runden.' : '');
 
   let out;
   try {
