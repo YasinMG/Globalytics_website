@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="globalytics-version" content="2026-11-19 12:00">
+<meta name="globalytics-version" content="2026-11-19 14:00">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Globalytics – Daten &amp; KI als Wachstumsmotor | Data Analytics, BI &amp; KI aus Frankfurt</title>
 <meta name="description" content="Globalytics verwandelt Unternehmensdaten in klare Entscheidungen, automatisierte Prozesse und messbares Wachstum – mit Business Intelligence, Data Engineering, KI und Prozessautomatisierung aus Frankfurt am Main.">
@@ -317,8 +317,17 @@ input:invalid:focus{border-color:#111111}
 .gla-round{width:44px;height:44px;border-radius:50%;border:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;background:#F4F4F2;color:#111111}
 .gla-round.is-send{background:#C8F135}
 .gla-round:disabled{opacity:.5;cursor:default}
-.gla-round.is-rec{background:#B42318;color:#FFFFFF;animation:gla-pulse 1.2s infinite}
-@keyframes gla-pulse{50%{box-shadow:0 0 0 6px rgba(180,35,24,.18)}}
+.gla-round.is-rec{background:#111111;color:#C8F135;animation:gla-pulse 1.6s infinite}
+@keyframes gla-pulse{50%{box-shadow:0 0 0 6px rgba(200,241,53,.35)}}
+.gla-vbar{display:flex;align-items:center;gap:10px;margin:0 12px 6px;padding:8px 12px;border-radius:14px;background:#F4F4F2;font-size:13px;color:#3A3A3A;min-height:40px}
+.gla-vbar[hidden]{display:none}
+.gla-orb.is-xs{width:22px;height:22px;transition:transform .08s linear}.gla-orb.is-xs i{inset:5px}
+.gla-orb.is-xs::before,.gla-orb.is-xs::after{inset:-4px}
+.gla-vbar[data-state="off"] .gla-orb{filter:grayscale(1);opacity:.45}
+.gla-vbar[data-state="off"] .gla-orb::before,.gla-vbar[data-state="off"] .gla-orb::after,.gla-vbar[data-state="off"] .gla-orb i{animation:none}
+.gla-vbar[data-state="user"]{background:#F2F5E6;color:#3D4A12}
+.gla-vbar[data-state="speak"]{background:#111111;color:#FFFFFF}
+.gla-vbar[data-state="think"] .gla-orb i,.gla-vbar[data-state="stt"] .gla-orb i{animation-duration:.9s}
 .gla-round:focus-visible{outline:3px solid #9BC21A;outline-offset:2px}
 .gla-foot{font-size:11px;color:#767676;text-align:center;padding:0 12px 10px}
 .gla-foot a{color:#5C5C5C}
@@ -1932,7 +1941,7 @@ input:invalid:focus{border-color:#111111}
   /* ---------------- Agent-Zustand (pro Browser-Tab) ---------------- */
   var API = '/api/agent';  // Endpunkte: /api/agent-start, -chat, -end
   var KEY = 'gl-agent-v1';
-  var st = { token: null, first: '', messages: [], stage: 'new', booking: null, voice: false, sent: 0 };
+  var st = { token: null, first: '', messages: [], stage: 'new', booking: null, voice: true, sent: 0 };
   try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved && saved.token) st = Object.assign(st, saved); } catch (e) {}
   function persist() { try { sessionStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
 
@@ -1948,8 +1957,7 @@ input:invalid:focus{border-color:#111111}
   root.className = 'gla';
   root.setAttribute('data-no-i18n', '');
   document.body.appendChild(root);
-  var hasSR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-  var hasTTS = 'speechSynthesis' in window;
+  var canVoice = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext));
 
   function build() {
     root.innerHTML =
@@ -1962,16 +1970,16 @@ input:invalid:focus{border-color:#111111}
         '<div class="gla-head">' +
           '<span class="gla-orb is-sm" aria-hidden="true"><i></i></span>' +
           '<div class="gla-head-t"><b>Globalytics ' + L('KI-Agent', 'AI agent') + '<span class="gla-badge">' + L('KI', 'AI') + '</span></b><small><span class="gla-dot"></span>' + L('Online · sieht, wo Sie gerade sind', 'Online · sees where you are') + '</small></div>' +
-          (hasTTS ? '<button type="button" class="gla-ico" data-act="voice" aria-pressed="' + (st.voice ? 'true' : 'false') + '" title="' + L('Antworten vorlesen', 'Read replies aloud') + '" aria-label="' + L('Antworten vorlesen', 'Read replies aloud') + '">' + ICON.speaker + '</button>' : '') +
           '<button type="button" class="gla-ico" data-act="close" aria-label="' + L('Schließen', 'Close') + '">' + ICON.close + '</button>' +
         '</div>' +
         '<div class="gla-ctx" aria-live="polite">' + ICON.pin + '<span></span></div>' +
         '<div class="gla-body"></div>' +
         '<div class="gla-sugg"></div>' +
+        '<div class="gla-vbar" data-state="off" aria-live="polite" hidden><span class="gla-orb is-xs" aria-hidden="true"><i></i></span><span class="gla-vtxt"></span></div>' +
         '<form class="gla-form" hidden>' +
           '<label class="gla-hp" for="gla-input">' + L('Nachricht', 'Message') + '</label>' +
           '<textarea id="gla-input" rows="1" maxlength="1200" placeholder="' + L('Ihre Frage …', 'Your question …') + '"></textarea>' +
-          (hasSR ? '<button type="button" class="gla-round" data-act="mic" aria-label="' + L('Spracheingabe', 'Voice input') + '">' + ICON.mic + '</button>' : '') +
+          (canVoice ? '<button type="button" class="gla-round" data-act="mic" aria-pressed="false" aria-label="' + L('Gesprächsmodus ein/aus', 'Voice mode on/off') + '" title="' + L('Gesprächsmodus ein/aus', 'Voice mode on/off') + '">' + ICON.mic + '</button>' : '') +
           '<button type="submit" class="gla-round is-send" aria-label="' + L('Senden', 'Send') + '">' + ICON.send + '</button>' +
         '</form>' +
         '<div class="gla-foot">' + L('KI-generierte Antworten können Fehler enthalten.', 'AI-generated answers may contain mistakes.') + ' <a href="/datenschutz">' + L('Datenschutz', 'Privacy') + '</a></div>' +
@@ -2048,7 +2056,7 @@ input:invalid:focus{border-color:#111111}
       $('.gla-gate').addEventListener('submit', submitGate);
       return;
     }
-    $('.gla-form').hidden = false;
+    $('.gla-form').hidden = false; $('.gla-vbar').hidden = !canVoice; setVState(V.on ? V.state : 'off');
     st.messages.forEach(function (m) { bubble(m.role, m.content); });
   }
 
@@ -2061,10 +2069,11 @@ input:invalid:focus{border-color:#111111}
       hideNudge(true);
       root.classList.add('is-open'); p.hidden = false; renderCtx();
       if (!$('.gla-body').children.length) renderChat();
+      if (st.token && st.voice) voiceStart();
       setTimeout(function () { var f = st.token ? $('#gla-input') : $('#gla-name'); if (f) f.focus({ preventScroll: true }); }, 60);
     } else {
       root.classList.remove('is-open'); p.hidden = true;
-      if (hasTTS) speechSynthesis.cancel();
+      voiceStop(true);
       endConversation('close');
       if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); else $('.gla-launch').focus();
     }
@@ -2075,8 +2084,7 @@ input:invalid:focus{border-color:#111111}
     if (t.classList.contains('gla-launch')) return toggle(true);
     var a = t.getAttribute('data-act');
     if (a === 'close') toggle(false);
-    if (a === 'mic') listen(t);
-    if (a === 'voice') { st.voice = !st.voice; t.setAttribute('aria-pressed', st.voice ? 'true' : 'false'); if (!st.voice) speechSynthesis.cancel(); persist(); }
+    if (a === 'mic') { if (V.on) voiceStop(); else { voicePrime(); voiceStart(); } }
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('is-open')) toggle(false); });
   document.addEventListener('click', function (e) {
@@ -2104,6 +2112,7 @@ input:invalid:focus{border-color:#111111}
     });
     if (bad) { err.textContent = { name: L('Bitte geben Sie Ihren Namen an.', 'Please enter your name.'), email: L('Bitte prüfen Sie Ihre E-Mail-Adresse.', 'Please check your email address.'), phone: L('Bitte geben Sie eine gültige Telefonnummer an.', 'Please enter a valid phone number.') }[bad]; f.elements[bad].focus(); return; }
     if (!f.elements.consent.checked) { err.textContent = L('Bitte bestätigen Sie die Einwilligung.', 'Please confirm your consent.'); return; }
+    voicePrime();
     err.textContent = ''; btn.disabled = true; btn.textContent = L('Verbinde …', 'Connecting …');
     fetch(API + '-start', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2112,8 +2121,11 @@ input:invalid:focus{border-color:#111111}
       .then(function (j) {
         st.token = j.token; st.first = j.first_name || val('name').split(' ')[0]; st.booking = j.booking_url; st.messages = []; persist();
         track('lead');
-        renderChat(); greet();
-        if (pending) { var m = pending; pending = null; send(m); }
+        renderChat();
+        (st.voice ? voiceStart() : Promise.resolve(false)).then(function () {
+          greet();
+          if (pending) { var m = pending; pending = null; send(m); }
+        });
         setTimeout(function () { var i = $('#gla-input'); if (i) i.focus({ preventScroll: true }); }, 60);
       })
       .catch(function (j) {
@@ -2142,7 +2154,7 @@ input:invalid:focus{border-color:#111111}
       sugg = [L('Kurz erklären, bitte', 'Explain briefly'), L('Wo fange ich mit KI an?', 'Where do I start with AI?'), L('Termin vereinbaren', 'Book a call')];
     }
     st.messages.push({ role: 'assistant', content: text }); persist();
-    bubble('assistant', text); suggestions(sugg); speak(text);
+    bubble('assistant', text); suggestions(sugg); if (!pending) speakReply(text);
   }
 
   /* ---------------- Gespräch ---------------- */
@@ -2150,7 +2162,7 @@ input:invalid:focus{border-color:#111111}
   function send(text) {
     text = (text || '').trim();
     if (!text || busy || !st.token) return;
-    busy = true; suggestions([]);
+    busy = true; suggestions([]); stopPlayback(); if (V.on) setVState('think');
     st.messages.push({ role: 'user', content: text.slice(0, 1200) }); persist();
     bubble('user', text);
     var typing = document.createElement('div'); typing.className = 'gla-typing'; typing.innerHTML = '<i></i><i></i><i></i>';
@@ -2158,20 +2170,20 @@ input:invalid:focus{border-color:#111111}
     $('.gla-head .gla-orb').classList.add('is-think');
     fetch(API + '-chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: st.token, messages: st.messages.slice(-16), context: context(), stage: st.stage, lang: lang() })
+      body: JSON.stringify({ token: st.token, messages: st.messages.slice(-16), context: context(), stage: st.stage, lang: lang(), voice: V.on })
     }).then(function (r) { return r.json().then(function (j) { if (!r.ok) { j.status = r.status; throw j; } return j; }); })
       .then(function (j) {
         typing.remove();
         st.messages.push({ role: 'assistant', content: j.reply }); st.stage = j.stage || st.stage;
         if (j.booking_url) st.booking = j.booking_url;
         persist();
-        bubble('assistant', j.reply); actions(j.action, j.target_section); suggestions(j.suggestions); speak(j.reply);
+        bubble('assistant', j.reply); actions(j.action, j.target_section); suggestions(j.suggestions); if (V.on) speakReply(j.reply);
         if (j.action === 'show_calculator' && window.innerWidth >= 1100) { var el = document.getElementById('rechner'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       })
       .catch(function (j) {
         typing.remove();
-        if (j && j.status === 401) { st.token = null; persist(); bubble('sys', L('Die Sitzung ist abgelaufen – bitte kurz neu starten.', 'Your session expired – please start again.')); setTimeout(renderChat, 1200); return; }
-        st.messages.pop(); persist();
+        if (j && j.status === 401) { voiceStop(true); st.token = null; persist(); bubble('sys', L('Die Sitzung ist abgelaufen – bitte kurz neu starten.', 'Your session expired – please start again.')); setTimeout(renderChat, 1200); return; }
+        st.messages.pop(); persist(); if (V.on) setVState('listen');
         bubble('sys', L('Das hat gerade nicht geklappt. Bitte versuchen Sie es noch einmal oder schreiben Sie an solutions@globalytics.org.', 'That didn\'t work. Please try again or email solutions@globalytics.org.'));
       })
       .then(function () { busy = false; $('.gla-head .gla-orb').classList.remove('is-think'); });
@@ -2205,31 +2217,180 @@ input:invalid:focus{border-color:#111111}
   }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') endConversation('leave'); });
 
-  /* ---------------- Sprache: Eingabe (Web Speech) + Vorlesen ---------------- */
-  var rec = null;
-  function listen(btn) {
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
-    if (rec) { rec.stop(); return; }
-    rec = new SR(); rec.lang = lang() === 'en' ? 'en-US' : 'de-DE'; rec.interimResults = true; rec.maxAlternatives = 1;
-    var input = $('#gla-input'), base = input.value;
-    btn.classList.add('is-rec');
-    rec.onresult = function (ev) {
-      var t = ''; for (var i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
-      input.value = (base ? base + ' ' : '') + t;
-      if (ev.results[ev.results.length - 1].isFinal) { rec.stop(); }
-    };
-    rec.onerror = function () { bubble('sys', L('Mikrofon nicht verfügbar – bitte tippen Sie Ihre Frage.', 'Microphone unavailable – please type your question.')); };
-    rec.onend = function () { btn.classList.remove('is-rec'); rec = null; if (input.value.trim() && input.value !== base) { var t = input.value; input.value = ''; send(t); } };
-    try { rec.start(); } catch (e) { btn.classList.remove('is-rec'); rec = null; }
-  }
-  function speak(text) {
-    if (!st.voice || !hasTTS) return;
+  /* ---------------- Gesprächsmodus: freihändig sprechen (Muster aus EKEP useVoice.ts) ----------------
+     Mikrofon → Sprechpausen-Erkennung (VAD, passt sich dem Raumgeräusch an) → WAV 16 kHz → /api/agent-stt
+     Antwort → /api/agent-tts (natürliche Stimme, satzweise vorab geladen) → Wiedergabe → wieder zuhören.
+     Unterbrechen ist möglich: lauter Einwurf während der Agent spricht stoppt die Wiedergabe. */
+  var V = { on: false, state: 'off', ac: null, stream: null, src: null, proc: null, floor: 0.004,
+            pre: [], buf: [], inSpeech: false, loud: 0, silent: 0, voiced: 0, total: 0, barge: 0,
+            queue: [], playing: null, gen: 0, level: 0 };
+  if (!canVoice) st.voice = false;
+
+  function voicePrime() {           // im Klick-Handler aufrufen: entsperrt Audio (iOS/Safari)
+    if (!canVoice) return;
     try {
-      speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text); u.lang = lang() === 'en' ? 'en-US' : 'de-DE'; u.rate = 1.03;
-      speechSynthesis.speak(u);
+      if (!V.ac) V.ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (V.ac.state === 'suspended') V.ac.resume();
     } catch (e) {}
+  }
+  function setVState(s) {
+    V.state = s;
+    var bar = $('.gla-vbar'); if (!bar) return;
+    bar.setAttribute('data-state', s);
+    var txt = { off: L('Gesprächsmodus aus – tippen oder Mikrofon einschalten', 'Voice mode off – type or turn on the microphone'),
+      listen: L('Ich höre zu … sprechen Sie einfach', 'I\'m listening … just speak'),
+      user: L('Sie sprechen …', 'You\'re speaking …'),
+      stt: L('Verstehe …', 'Understanding …'),
+      think: L('Denke nach …', 'Thinking …'),
+      speak: L('Spricht … (unterbrechen Sie jederzeit)', 'Speaking … (interrupt any time)') }[s];
+    bar.querySelector('.gla-vtxt').textContent = txt;
+    var mic = $('[data-act="mic"]');
+    if (mic) { mic.setAttribute('aria-pressed', V.on ? 'true' : 'false'); mic.classList.toggle('is-rec', V.on); }
+  }
+  function voiceStart() {
+    if (!canVoice || V.on) return Promise.resolve(V.on);
+    voicePrime();
+    return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } })
+      .then(function (stream) {
+        V.stream = stream; V.on = true; st.voice = true; persist();
+        V.src = V.ac.createMediaStreamSource(stream);
+        V.proc = V.ac.createScriptProcessor(2048, 1, 1);
+        V.proc.onaudioprocess = onFrame;
+        V.src.connect(V.proc); V.proc.connect(V.ac.destination);
+        V.floor = 0.004; V.pre = []; resetUtt();
+        setVState(V.playing || V.queue.length ? 'speak' : busy ? 'think' : 'listen');
+        return true;
+      })
+      .catch(function () {
+        st.voice = false; persist(); setVState('off');
+        bubble('sys', L('Das Mikrofon ist blockiert. Bitte erlauben Sie den Zugriff im Browser (Schloss-Symbol neben der Adresse) – oder tippen Sie einfach.', 'The microphone is blocked. Please allow access in your browser (lock icon next to the address) – or just type.'));
+        return false;
+      });
+  }
+  function voiceStop(keepPref) {
+    if (V.proc) { try { V.proc.disconnect(); V.src.disconnect(); } catch (e) {} }
+    if (V.stream) V.stream.getTracks().forEach(function (t) { t.stop(); });
+    V.proc = V.src = V.stream = null; V.on = false; resetUtt();
+    if (!keepPref) { st.voice = false; persist(); }
+    stopPlayback();
+    setVState('off');
+  }
+  function resetUtt() { V.buf = []; V.inSpeech = false; V.loud = 0; V.silent = 0; V.voiced = 0; V.total = 0; V.barge = 0; }
+
+  function onFrame(e) {
+    if (!V.on) return;
+    var d = e.inputBuffer.getChannelData(0), f = new Float32Array(d.length), sum = 0;
+    for (var i = 0; i < d.length; i++) { f[i] = d[i]; sum += d[i] * d[i]; }
+    var rms = Math.sqrt(sum / d.length), ms = d.length / V.ac.sampleRate * 1000;
+    V.level = V.level * 0.6 + rms * 0.4; paintLevel();
+    var start = Math.max(0.010, V.floor * 3.2), keep = Math.max(0.006, V.floor * 2);
+
+    if (V.state === 'speak') {                         // Agent spricht: nur lauter, längerer Einwurf unterbricht
+      V.barge = rms > Math.max(0.05, V.floor * 9) ? V.barge + 1 : 0;
+      V.pre.push(f); if (V.pre.length > 8) V.pre.shift();
+      if (V.barge >= 6) { stopPlayback(); setVState('user'); V.inSpeech = true; V.buf = V.pre.slice(); V.voiced = 6 * ms; }
+      return;
+    }
+    if (V.state === 'stt' || V.state === 'think' || V.state === 'off') return;
+
+    if (!V.inSpeech) {
+      V.floor = Math.min(0.03, Math.max(0.0015, V.floor * 0.97 + rms * 0.03));
+      V.pre.push(f); if (V.pre.length > 8) V.pre.shift();          // ~0,35 s Vorlauf, damit kein Wortanfang fehlt
+      V.loud = rms > start ? V.loud + 1 : 0;
+      if (V.loud >= 2) { V.inSpeech = true; V.buf = V.pre.slice(); V.voiced = 0; V.silent = 0; V.total = 0; setVState('user'); }
+      return;
+    }
+    V.buf.push(f); V.total += ms;
+    if (rms > keep) { V.voiced += ms; V.silent = 0; } else V.silent += ms;
+    if (V.silent >= 1100 || V.total >= 45000) {                     // Satzende erkannt
+      var frames = V.buf, voiced = V.voiced; resetUtt();
+      if (voiced < 300) { setVState('listen'); return; }            // Räuspern, Klick o. Ä. ignorieren
+      sendUtterance(frames, V.ac.sampleRate);
+    }
+  }
+  function paintLevel() {
+    var o = $('.gla-vbar .gla-orb'); if (!o) return;
+    var s = V.state === 'user' ? Math.min(1.35, 1 + V.level * 6) : 1;
+    o.style.transform = 'scale(' + s.toFixed(3) + ')';
+  }
+
+  function toWav16k(frames, rate) {
+    var n = 0; frames.forEach(function (f) { n += f.length; });
+    var all = new Float32Array(n), o = 0; frames.forEach(function (f) { all.set(f, o); o += f.length; });
+    var ratio = rate / 16000, len = Math.floor(n / ratio), pcm = new Int16Array(len), peak = 0;
+    for (var i = 0; i < n; i++) peak = Math.max(peak, Math.abs(all[i]));
+    var gain = peak > 0 && peak < 0.5 ? Math.min(4, 0.9 / peak) : 1;   // leise Stimmen anheben
+    for (var j = 0; j < len; j++) {
+      var a = Math.floor(j * ratio), b = Math.min(n, Math.floor((j + 1) * ratio)), s = 0;
+      for (var k = a; k < b; k++) s += all[k];
+      var v = Math.max(-1, Math.min(1, (s / Math.max(1, b - a)) * gain));
+      pcm[j] = v < 0 ? v * 0x8000 : v * 0x7fff;
+    }
+    var buf = new ArrayBuffer(44 + pcm.length * 2), dv = new DataView(buf);
+    var w = function (p, str) { for (var i = 0; i < str.length; i++) dv.setUint8(p + i, str.charCodeAt(i)); };
+    w(0, 'RIFF'); dv.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, 16000, true);
+    dv.setUint32(28, 32000, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); w(36, 'data'); dv.setUint32(40, pcm.length * 2, true);
+    new Int16Array(buf, 44).set(pcm);
+    var bytes = new Uint8Array(buf), bin = '';
+    for (var c = 0; c < bytes.length; c += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(c, c + 0x8000));
+    return btoa(bin);
+  }
+  function sendUtterance(frames, rate) {
+    setVState('stt');
+    fetch(API + '-stt', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: st.token, audio: toWav16k(frames, rate), lang: lang() }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+      .then(function (j) {
+        var t = (j.text || '').trim();
+        if (t.replace(/[^\p{L}\p{N}]/gu, '').length < 2) { setVState('listen'); return; }
+        send(t);
+      })
+      .catch(function () { setVState('listen'); bubble('sys', L('Das habe ich akustisch nicht verstanden – bitte noch einmal.', 'I didn\'t catch that – please say it again.')); });
+  }
+
+  /* Antwort sprechen: in Sätze teilen, nächsten Satz schon laden, während der aktuelle läuft */
+  function chunks(text) {
+    var parts = String(text).replace(/\s+/g, ' ').match(/[^.!?…]+[.!?…]+["“”»]?\s*|[^.!?…]+$/g) || [text], out = [], cur = '';
+    parts.forEach(function (p) { if ((cur + p).length > 220 && cur) { out.push(cur.trim()); cur = p; } else cur += p; if (cur.length >= 70) { out.push(cur.trim()); cur = ''; } });
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+  function ttsFetch(text) {
+    return fetch(API + '-tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: st.token, text: text, lang: lang() }) })
+      .then(function (r) { if (!r.ok) throw new Error('tts'); return r.arrayBuffer(); })
+      .then(function (ab) { return new Promise(function (ok, bad) { V.ac.decodeAudioData(ab, ok, bad); }); });
+  }
+  function speakReply(text) {
+    if (!V.on || !text) return;
+    stopPlayback();
+    var gen = ++V.gen, list = chunks(text), next = null;
+    setVState('speak');
+    function load(i) { return i < list.length ? ttsFetch(list[i]).catch(function () { return { fail: list[i] }; }) : null; }
+    var cur = load(0);
+    (function play(i) {
+      if (gen !== V.gen) return;
+      if (!cur) { V.playing = null; if (V.on) setVState('listen'); return; }
+      cur.then(function (buf) {
+        if (gen !== V.gen) return;
+        next = load(i + 1);
+        var done = function () { if (gen !== V.gen) return; cur = next; play(i + 1); };
+        if (buf.fail) { fallbackSpeak(buf.fail, done); return; }
+        var src = V.ac.createBufferSource(); src.buffer = buf; src.connect(V.ac.destination);
+        src.onended = done; V.playing = src; src.start();
+      });
+    })(0);
+  }
+  function fallbackSpeak(text, done) {        // nur falls der Stimm-Dienst ausfällt
+    if (!('speechSynthesis' in window)) return done();
+    var u = new SpeechSynthesisUtterance(text); u.lang = lang() === 'en' ? 'en-US' : 'de-DE';
+    u.onend = done; u.onerror = done; speechSynthesis.speak(u);
+  }
+  function stopPlayback() {
+    V.gen++;
+    if (V.playing) { try { V.playing.onended = null; V.playing.stop(); } catch (e) {} V.playing = null; }
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
+    if (V.on && V.state === 'speak') setVState('listen');
   }
 
   /* ---------------- Proaktive Hinweise (einmal pro Sitzung) ---------------- */
@@ -2270,7 +2431,7 @@ input:invalid:focus{border-color:#111111}
     setTimeout(function () {
       var open = root.classList.contains('is-open');
       build();
-      if (open) { root.classList.add('is-open'); $('.gla-panel').hidden = false; renderCtx(); renderChat(); }
+      if (open) { root.classList.add('is-open'); $('.gla-panel').hidden = false; renderCtx(); renderChat(); setVState(V.on ? V.state : 'off'); }
     }, 0);
   });
   updateSection();
